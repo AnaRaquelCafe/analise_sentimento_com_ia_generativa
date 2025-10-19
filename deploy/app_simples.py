@@ -56,7 +56,10 @@ def classificar_sentimento_binario(texto, threshold=0.55):
             elif probas["NEG"] >= threshold:
                 return pd.Series(["negativo", round(probas["NEG"], 3)])
             else:
-                return pd.Series(["incerto", max(round(probas["POS"], 3), round(probas["NEG"], 3))])
+                # Caso incerto: identifica tendência
+                tendencia = "positiva" if probas["POS"] > probas["NEG"] else "negativa"
+                prob_max = max(round(probas["POS"], 3), round(probas["NEG"], 3))
+                return pd.Series([f"incerto (tendência {tendencia})", prob_max])
     except Exception as e:
         st.error(f"Erro na análise: {str(e)}")
         return pd.Series(["erro", 0.0])
